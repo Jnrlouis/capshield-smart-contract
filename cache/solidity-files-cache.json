@@ -1,83 +1,6 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/CAPY.sol": {
-      "lastModificationDate": 1767198353463,
-      "contentHash": "7e0831169c409f856c371257aadf8079",
-      "sourceName": "contracts/CAPY.sol",
-      "solcConfig": {
-        "version": "0.8.30",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "solady/src/tokens/ERC20.sol",
-        "solady/src/auth/OwnableRoles.sol",
-        "@openzeppelin/contracts/security/Pausable.sol",
-        "./interfaces/ICAPY.sol"
-      ],
-      "versionPragmas": [
-        "0.8.30"
-      ],
-      "artifacts": [
-        "CAPY"
-      ]
-    },
-    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/interfaces/ICAPY.sol": {
-      "lastModificationDate": 1766572889560,
-      "contentHash": "8eec244dfcc288d50f5b8e81f6441a01",
-      "sourceName": "contracts/interfaces/ICAPY.sol",
-      "solcConfig": {
-        "version": "0.8.30",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "0.8.30"
-      ],
-      "artifacts": [
-        "ICAPY"
-      ]
-    },
     "/home/jnrlouis/gigs/capshield-smart-contract/node_modules/solady/src/auth/OwnableRoles.sol": {
       "lastModificationDate": 1766562537666,
       "contentHash": "d75b1ab9824b2ea5c4a38e03211ab03e",
@@ -262,83 +185,6 @@
         "Context"
       ]
     },
-    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/SEED.sol": {
-      "lastModificationDate": 1767700553125,
-      "contentHash": "76a2c054754b0b02de94a19bc414b360",
-      "sourceName": "contracts/SEED.sol",
-      "solcConfig": {
-        "version": "0.8.30",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "solady/src/tokens/ERC20.sol",
-        "solady/src/auth/OwnableRoles.sol",
-        "@openzeppelin/contracts/security/Pausable.sol",
-        "./interfaces/ISEED.sol"
-      ],
-      "versionPragmas": [
-        "0.8.30"
-      ],
-      "artifacts": [
-        "SEED"
-      ]
-    },
-    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/interfaces/ISEED.sol": {
-      "lastModificationDate": 1767700544605,
-      "contentHash": "1af141cdda3f587cfdf77c70e8da51fe",
-      "sourceName": "contracts/interfaces/ISEED.sol",
-      "solcConfig": {
-        "version": "0.8.30",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "evmVersion": "paris",
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "0.8.30"
-      ],
-      "artifacts": [
-        "ISEED"
-      ]
-    },
     "/home/jnrlouis/gigs/capshield-smart-contract/contracts/test/MockMultisig.sol": {
       "lastModificationDate": 1766572889564,
       "contentHash": "47e07da30a16de372ffc754ee78645d0",
@@ -375,6 +221,160 @@
       ],
       "artifacts": [
         "MockMultisig"
+      ]
+    },
+    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/AngelSEED.sol": {
+      "lastModificationDate": 1767735242389,
+      "contentHash": "684080f1d9cd5b9f7d66a68e7de4e443",
+      "sourceName": "contracts/AngelSEED.sol",
+      "solcConfig": {
+        "version": "0.8.30",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "solady/src/tokens/ERC20.sol",
+        "solady/src/auth/OwnableRoles.sol",
+        "@openzeppelin/contracts/security/Pausable.sol",
+        "./interfaces/IAngelSEED.sol"
+      ],
+      "versionPragmas": [
+        "0.8.30"
+      ],
+      "artifacts": [
+        "AngelSEED"
+      ]
+    },
+    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/interfaces/IAngelSEED.sol": {
+      "lastModificationDate": 1767735405641,
+      "contentHash": "c9442a72f625db2db7bdf3aa2da881c6",
+      "sourceName": "contracts/interfaces/IAngelSEED.sol",
+      "solcConfig": {
+        "version": "0.8.30",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.8.30"
+      ],
+      "artifacts": [
+        "IAngelSEED"
+      ]
+    },
+    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/CAPX.sol": {
+      "lastModificationDate": 1767733659009,
+      "contentHash": "8369df21f9b5f38ced3b1f36db532cd2",
+      "sourceName": "contracts/CAPX.sol",
+      "solcConfig": {
+        "version": "0.8.30",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "solady/src/tokens/ERC20.sol",
+        "solady/src/auth/OwnableRoles.sol",
+        "@openzeppelin/contracts/security/Pausable.sol",
+        "./interfaces/ICAPX.sol"
+      ],
+      "versionPragmas": [
+        "0.8.30"
+      ],
+      "artifacts": [
+        "CAPX"
+      ]
+    },
+    "/home/jnrlouis/gigs/capshield-smart-contract/contracts/interfaces/ICAPX.sol": {
+      "lastModificationDate": 1767735119893,
+      "contentHash": "4d42c4beb654aa655ace16e4e8d1a333",
+      "sourceName": "contracts/interfaces/ICAPX.sol",
+      "solcConfig": {
+        "version": "0.8.30",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.8.30"
+      ],
+      "artifacts": [
+        "ICAPX"
       ]
     }
   }

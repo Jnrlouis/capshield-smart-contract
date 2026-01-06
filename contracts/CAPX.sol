@@ -4,11 +4,11 @@ pragma solidity 0.8.30;
 import {ERC20} from "solady/src/tokens/ERC20.sol";
 import {OwnableRoles} from "solady/src/auth/OwnableRoles.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
-import {ICAPY} from "./interfaces/ICAPY.sol";
+import {ICAPX} from "./interfaces/ICAPX.sol";
 
 /**
- * @title CAPY
- * @notice CAPShield Token (CAPY) - Shield Token with role-based minting, transfer fees, and revenue-based minting
+ * @title CAPX
+ * @notice CAPShield Token (CAPX) - Shield Token with role-based minting, transfer fees, and revenue-based minting
  * @dev Implements BEP-20 (ERC20-compatible) token standard for BNB Smart Chain
  * @dev Built with Solady's gas-optimized ERC20 and OwnableRoles, plus OpenZeppelin's Pausable
  *
@@ -22,7 +22,7 @@ import {ICAPY} from "./interfaces/ICAPY.sol";
  * - Burn mechanism
  * - Multisig-only admin
  */
-contract CAPY is ERC20, OwnableRoles, Pausable, ICAPY {
+contract CAPX is ERC20, OwnableRoles, Pausable, ICAPX {
     ///////////////// STATE VARIABLES /////////////////
 
     uint256 public constant TEAM_MINTER_ROLE = _ROLE_0;
@@ -47,7 +47,7 @@ contract CAPY is ERC20, OwnableRoles, Pausable, ICAPY {
     ///////////////// CONSTRUCTOR /////////////////
 
     /**
-     * @notice Initializes the CAPY token with admin, treasury, and DAO addresses
+     * @notice Initializes the CAPX token with admin, treasury, and DAO addresses
      * @param admin Address that will receive owner role (MUST be a multisig contract for production)
      * @param _treasury Treasury address for fee collection
      * @param _dao DAO address for governance
@@ -76,6 +76,9 @@ contract CAPY is ERC20, OwnableRoles, Pausable, ICAPY {
         emit DaoAddressUpdated(address(0), _dao);
         emit ExemptionUpdated(_treasury, true);
         emit ExemptionUpdated(_dao, true);
+        emit RoleGranted(TEAM_MINTER_ROLE, admin, address(0));
+        emit RoleGranted(TREASURY_MINTER_ROLE, admin, address(0));
+        emit RoleGranted(DAO_MINTER_ROLE, admin, address(0));
     }
 
     ///////////////// MODIFIERS /////////////////
@@ -96,14 +99,14 @@ contract CAPY is ERC20, OwnableRoles, Pausable, ICAPY {
      * @notice Returns the name of the token
      */
     function name() public pure override returns (string memory) {
-        return "CAPY";
+        return "CAPShield";
     }
 
     /**
      * @notice Returns the symbol of the token
      */
     function symbol() public pure override returns (string memory) {
-        return "CAPY";
+        return "CAPX";
     }
 
     ///////////////// MINTING FUNCTIONS /////////////////

@@ -2,10 +2,10 @@
 pragma solidity 0.8.30;
 
 /**
- * @title ISEED
- * @notice Interface for CAPShield Community Token (SEED)
+ * @title IAngelSEED
+ * @notice Interface for CAPShield Community Token (AngelSEED)
  */
-interface ISEED {
+interface IAngelSEED {
     ///////////////// ERRORS /////////////////
 
     error ZeroAddress();
@@ -18,7 +18,7 @@ interface ISEED {
 
     ///////////////// EVENTS /////////////////
 
-    event RewardMint(address indexed to, uint256 amount, string indexed reason);
+    event RewardMint(address indexed to, uint256 amount, string reason);
     event RoleGranted(uint256 indexed role, address indexed account, address indexed sender);
     event RoleRevoked(uint256 indexed role, address indexed account, address indexed sender);
 

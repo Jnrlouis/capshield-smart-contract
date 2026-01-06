@@ -59,63 +59,63 @@ async function main() {
   }
   console.log("✓ Verified: Multisig address is a contract\n");
 
-  // Deploy CAPY Token
-  console.log("Deploying CAPY Token (Shield Token)...");
-  const CAPY = await ethers.getContractFactory("CAPY");
-  const capy = await CAPY.deploy(MULTISIG_ADDRESS, TREASURY_ADDRESS, DAO_ADDRESS);
-  await capy.waitForDeployment();
-  const capyAddress = await capy.getAddress();
-  console.log(`✓ CAPY (${currentNetwork.tokenStandard}) deployed to:`, capyAddress);
-  console.log("  Transaction:", capy.deploymentTransaction().hash);
+  // Deploy CAPX Token
+  console.log("Deploying CAPX Token (Shield Token)...");
+  const CAPX = await ethers.getContractFactory("CAPX");
+  const capx = await CAPX.deploy(MULTISIG_ADDRESS, TREASURY_ADDRESS, DAO_ADDRESS);
+  await capx.waitForDeployment();
+  const capxAddress = await capx.getAddress();
+  console.log(`✓ CAPX (${currentNetwork.tokenStandard}) deployed to:`, capxAddress);
+  console.log("  Transaction:", capx.deploymentTransaction().hash);
   console.log("");
 
-  // Deploy SEED Token
-  console.log("Deploying SEED Token (Community Token)...");
-  const SEED = await ethers.getContractFactory("SEED");
-  const seed = await SEED.deploy(MULTISIG_ADDRESS);
-  await seed.waitForDeployment();
-  const seedAddress = await seed.getAddress();
-  console.log(`✓ SEED (${currentNetwork.tokenStandard}) deployed to:`, seedAddress);
-  console.log("  Transaction:", seed.deploymentTransaction().hash);
+  // Deploy AngelSEED Token
+  console.log("Deploying AngelSEED Token (Community Token)...");
+  const AngelSEED = await ethers.getContractFactory("AngelSEED");
+  const angelSeed = await AngelSEED.deploy(MULTISIG_ADDRESS);
+  await angelSeed.waitForDeployment();
+  const angelSeedAddress = await angelSeed.getAddress();
+  console.log(`✓ AngelSEED (${currentNetwork.tokenStandard}) deployed to:`, angelSeedAddress);
+  console.log("  Transaction:", angelSeed.deploymentTransaction().hash);
   console.log("");
 
   // Verify deployments
   console.log("Verifying deployments...");
 
-  const capyName = await capy.name();
-  const capySymbol = await capy.symbol();
-  const capyDecimals = await capy.decimals();
-  const capyMaxSupply = await capy.getMaxSupply();
-  const capyOwner = await capy.owner();
-  const capyIsMultisig = await capy.isOwnerMultisig();
+  const capxName = await capx.name();
+  const capxSymbol = await capx.symbol();
+  const capxDecimals = await capx.decimals();
+  const capxMaxSupply = await capx.getMaxSupply();
+  const capxOwner = await capx.owner();
+  const capxIsMultisig = await capx.isOwnerMultisig();
 
-  const seedName = await seed.name();
-  const seedSymbol = await seed.symbol();
-  const seedDecimals = await seed.decimals();
-  const seedMaxSupply = await seed.getMaxSupply();
-  const seedOwner = await seed.owner();
-  const seedIsMultisig = await seed.isOwnerMultisig();
+  const angelSeedName = await angelSeed.name();
+  const angelSeedSymbol = await angelSeed.symbol();
+  const angelSeedDecimals = await angelSeed.decimals();
+  const angelSeedMaxSupply = await angelSeed.getMaxSupply();
+  const angelSeedOwner = await angelSeed.owner();
+  const angelSeedIsMultisig = await angelSeed.isOwnerMultisig();
 
-  console.log("CAPY Token:");
-  console.log("  Name:", capyName);
-  console.log("  Symbol:", capySymbol);
-  console.log("  Decimals:", capyDecimals);
-  console.log("  Max Supply:", ethers.formatUnits(capyMaxSupply, 18), "CAPY");
-  console.log("  Owner:", capyOwner);
-  console.log("  Owner is Multisig:", capyIsMultisig);
+  console.log("CAPX Token:");
+  console.log("  Name:", capxName);
+  console.log("  Symbol:", capxSymbol);
+  console.log("  Decimals:", capxDecimals);
+  console.log("  Max Supply:", ethers.formatUnits(capxMaxSupply, 18), "CAPX");
+  console.log("  Owner:", capxOwner);
+  console.log("  Owner is Multisig:", capxIsMultisig);
   console.log("");
 
-  console.log("SEED Token:");
-  console.log("  Name:", seedName);
-  console.log("  Symbol:", seedSymbol);
-  console.log("  Decimals:", seedDecimals);
-  console.log("  Max Supply:", ethers.formatUnits(seedMaxSupply, 18), "SEED");
-  console.log("  Owner:", seedOwner);
-  console.log("  Owner is Multisig:", seedIsMultisig);
+  console.log("AngelSEED Token:");
+  console.log("  Name:", angelSeedName);
+  console.log("  Symbol:", angelSeedSymbol);
+  console.log("  Decimals:", angelSeedDecimals);
+  console.log("  Max Supply:", ethers.formatUnits(angelSeedMaxSupply, 18), "AngelSEED");
+  console.log("  Owner:", angelSeedOwner);
+  console.log("  Owner is Multisig:", angelSeedIsMultisig);
   console.log("");
 
   // Validate multisig enforcement
-  if (!capyIsMultisig || !seedIsMultisig) {
+  if (!capxIsMultisig || !angelSeedIsMultisig) {
     console.error("⚠️  WARNING: One or more tokens do not have a multisig owner!");
   } else {
     console.log("✓ All tokens correctly configured with multisig admin");
@@ -129,26 +129,26 @@ async function main() {
     deployer: deployer.address,
     timestamp: new Date().toISOString(),
     contracts: {
-      CAPY: {
-        address: capyAddress,
-        name: capyName,
-        symbol: capySymbol,
-        decimals: Number(capyDecimals),
-        maxSupply: capyMaxSupply.toString(),
-        owner: capyOwner,
-        isOwnerMultisig: capyIsMultisig,
-        deploymentTx: capy.deploymentTransaction().hash,
+      CAPX: {
+        address: capxAddress,
+        name: capxName,
+        symbol: capxSymbol,
+        decimals: Number(capxDecimals),
+        maxSupply: capxMaxSupply.toString(),
+        owner: capxOwner,
+        isOwnerMultisig: capxIsMultisig,
+        deploymentTx: capx.deploymentTransaction().hash,
         constructorArgs: [MULTISIG_ADDRESS, TREASURY_ADDRESS, DAO_ADDRESS],
       },
-      SEED: {
-        address: seedAddress,
-        name: seedName,
-        symbol: seedSymbol,
-        decimals: Number(seedDecimals),
-        maxSupply: seedMaxSupply.toString(),
-        owner: seedOwner,
-        isOwnerMultisig: seedIsMultisig,
-        deploymentTx: seed.deploymentTransaction().hash,
+      AngelSEED: {
+        address: angelSeedAddress,
+        name: angelSeedName,
+        symbol: angelSeedSymbol,
+        decimals: Number(angelSeedDecimals),
+        maxSupply: angelSeedMaxSupply.toString(),
+        owner: angelSeedOwner,
+        isOwnerMultisig: angelSeedIsMultisig,
+        deploymentTx: angelSeed.deploymentTransaction().hash,
         constructorArgs: [MULTISIG_ADDRESS],
       },
     },
@@ -176,11 +176,11 @@ async function main() {
   console.log(`Contract Verification Commands (${currentNetwork.explorer})`);
   console.log("==========================================");
   console.log("");
-  console.log("CAPY Token:");
-  console.log(`npx hardhat verify --network ${network.name} ${capyAddress} "${MULTISIG_ADDRESS}" "${TREASURY_ADDRESS}" "${DAO_ADDRESS}"`);
+  console.log("CAPX Token:");
+  console.log(`npx hardhat verify --network ${network.name} ${capxAddress} "${MULTISIG_ADDRESS}" "${TREASURY_ADDRESS}" "${DAO_ADDRESS}"`);
   console.log("");
-  console.log("SEED Token:");
-  console.log(`npx hardhat verify --network ${network.name} ${seedAddress} "${MULTISIG_ADDRESS}"`);
+  console.log("AngelSEED Token:");
+  console.log(`npx hardhat verify --network ${network.name} ${angelSeedAddress} "${MULTISIG_ADDRESS}"`);
   console.log("");
   console.log("==========================================");
   console.log("Deployment Complete!");

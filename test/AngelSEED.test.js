@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("SEED Token", function () {
+describe("AngelSEED Token", function () {
   async function deployTokenFixture() {
     const [adminSigner, rewardMinter, user1, user2, user3] =
       await ethers.getSigners();
@@ -11,8 +11,8 @@ describe("SEED Token", function () {
     const MockMultisig = await ethers.getContractFactory("MockMultisig");
     const multisig = await MockMultisig.deploy(adminSigner.address);
 
-    const SEED = await ethers.getContractFactory("SEED");
-    const seed = await SEED.deploy(multisig.target);
+    const AngelSEED = await ethers.getContractFactory("AngelSEED");
+    const seed = await AngelSEED.deploy(multisig.target);
 
     // Get role identifiers
     const DEFAULT_ADMIN_ROLE = await seed.DEFAULT_ADMIN_ROLE();
@@ -32,6 +32,7 @@ describe("SEED Token", function () {
       if (signer && signer.address === multisig.target) {
         return {
           rewardMint: (to, amount, reason) => executeAsAdmin("rewardMint", to, amount, reason),
+          batchRewardMint: (recipients, amounts, reason) => executeAsAdmin("batchRewardMint", recipients, amounts, reason),
           grantRoles: (user, roles) =>
             executeAsAdmin("grantRoles", user, roles),
           revokeRoles: (user, roles) =>
@@ -67,8 +68,8 @@ describe("SEED Token", function () {
     it("Should have correct name, symbol, and decimals", async function () {
       const { seed } = await loadFixture(deployTokenFixture);
 
-      expect(await seed.name()).to.equal("SEED");
-      expect(await seed.symbol()).to.equal("SEED");
+      expect(await seed.name()).to.equal("AngelSEED");
+      expect(await seed.symbol()).to.equal("AngelSEED");
       expect(await seed.decimals()).to.equal(18);
     });
 
@@ -101,11 +102,11 @@ describe("SEED Token", function () {
     it("Should revert if admin is an EOA during deployment", async function () {
       const [eoaAdmin] = await ethers.getSigners();
 
-      const SEED = await ethers.getContractFactory("SEED");
+      const AngelSEED = await ethers.getContractFactory("AngelSEED");
 
       // Should revert because eoaAdmin is not a contract
-      await expect(SEED.deploy(eoaAdmin.address)).to.be.revertedWithCustomError(
-        SEED,
+      await expect(AngelSEED.deploy(eoaAdmin.address)).to.be.revertedWithCustomError(
+        AngelSEED,
         "AdminMustBeContract"
       );
     });
@@ -250,6 +251,279 @@ describe("SEED Token", function () {
       await expect(
         seed.connect(admin).rewardMint(user1.address, 0, "Test")
       ).to.be.revertedWithCustomError(seed, "InvalidAmount");
+    });
+
+    it("Should revert when reason is empty", async function () {
+      const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
+
+      const amount = ethers.parseUnits("1000", 18);
+
+      await expect(
+        seed.connect(admin).rewardMint(user1.address, amount, "")
+      ).to.be.revertedWithCustomError(seed, "InvalidReason");
+    });
+
+    it("Should revert when reason exceeds max length", async function () {
+      const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
+
+      const amount = ethers.parseUnits("1000", 18);
+      const longReason = "a".repeat(257); // MAX_REASON_LENGTH is 256
+
+      await expect(
+        seed.connect(admin).rewardMint(user1.address, amount, longReason)
+      ).to.be.revertedWithCustomError(seed, "InvalidReason");
+    });
+  });
+
+  describe("4b. Batch Reward Minting", function () {
+    it("Should allow batch minting to multiple recipients", async function () {
+      const { seed, admin, user1, user2, user3 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user1.address, user2.address, user3.address];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("2000", 18),
+        ethers.parseUnits("3000", 18),
+      ];
+      const reason = "Batch community rewards";
+
+      await seed.connect(admin).batchRewardMint(recipients, amounts, reason);
+
+      expect(await seed.balanceOf(user1.address)).to.equal(amounts[0]);
+      expect(await seed.balanceOf(user2.address)).to.equal(amounts[1]);
+      expect(await seed.balanceOf(user3.address)).to.equal(amounts[2]);
+
+      const totalAmount = amounts[0] + amounts[1] + amounts[2];
+      expect(await seed.totalSupply()).to.equal(totalAmount);
+      expect(await seed.getTotalMinted()).to.equal(totalAmount);
+    });
+
+    it("Should emit RewardMint events for each recipient", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("2000", 18),
+      ];
+      const reason = "Batch rewards";
+
+      const tx = await seed
+        .connect(admin)
+        .batchRewardMint(recipients, amounts, reason);
+
+      await expect(tx)
+        .to.emit(seed, "RewardMint")
+        .withArgs(user1.address, amounts[0], reason);
+
+      await expect(tx)
+        .to.emit(seed, "RewardMint")
+        .withArgs(user2.address, amounts[1], reason);
+    });
+
+    it("Should allow granted reward minter to batch mint", async function () {
+      const {
+        seed,
+        rewardMinter,
+        user1,
+        user2,
+        REWARD_MINTER_ROLE,
+        executeAsAdmin,
+      } = await loadFixture(deployTokenFixture);
+
+      // Grant reward minter role
+      await executeAsAdmin(
+        "grantRoles",
+        rewardMinter.address,
+        REWARD_MINTER_ROLE
+      );
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [
+        ethers.parseUnits("500", 18),
+        ethers.parseUnits("750", 18),
+      ];
+      const reason = "Granted minter batch";
+
+      await seed
+        .connect(rewardMinter)
+        .batchRewardMint(recipients, amounts, reason);
+
+      expect(await seed.balanceOf(user1.address)).to.equal(amounts[0]);
+      expect(await seed.balanceOf(user2.address)).to.equal(amounts[1]);
+    });
+
+    it("Should revert when arrays have different lengths", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [ethers.parseUnits("1000", 18)]; // Only 1 amount for 2 recipients
+      const reason = "Test";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "ArrayLengthMismatch");
+    });
+
+    it("Should revert when arrays are empty", async function () {
+      const { seed, admin } = await loadFixture(deployTokenFixture);
+
+      const recipients = [];
+      const amounts = [];
+      const reason = "Test";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "EmptyArrays");
+    });
+
+    it("Should revert when any recipient is zero address", async function () {
+      const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
+
+      const recipients = [user1.address, ethers.ZeroAddress];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("1000", 18),
+      ];
+      const reason = "Test";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "ZeroAddress");
+    });
+
+    it("Should revert when any amount is zero", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [ethers.parseUnits("1000", 18), 0];
+      const reason = "Test";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "InvalidAmount");
+    });
+
+    it("Should revert when batch minting would exceed max supply", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const maxSupply = await seed.getMaxSupply();
+      const recipients = [user1.address, user2.address];
+      const amounts = [maxSupply / 2n + 1n, maxSupply / 2n + 1n]; // Together exceed max
+      const reason = "Test";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "MaxSupplyExceeded");
+    });
+
+    it("Should revert when reason is empty for batch mint", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("1000", 18),
+      ];
+      const reason = "";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "InvalidReason");
+    });
+
+    it("Should revert when reason exceeds max length for batch mint", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("1000", 18),
+      ];
+      const longReason = "a".repeat(257); // MAX_REASON_LENGTH is 256
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, longReason)
+      ).to.be.revertedWithCustomError(seed, "InvalidReason");
+    });
+
+    it("Should revert when unauthorized user tries to batch mint", async function () {
+      const { seed, user1, user2, user3 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      const recipients = [user2.address, user3.address];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("1000", 18),
+      ];
+      const reason = "Test";
+
+      await expect(
+        seed.connect(user1).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWithCustomError(seed, "Unauthorized");
+    });
+
+    it("Should block batch minting when paused", async function () {
+      const { seed, admin, user1, user2 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      await seed.connect(admin).pause();
+
+      const recipients = [user1.address, user2.address];
+      const amounts = [
+        ethers.parseUnits("1000", 18),
+        ethers.parseUnits("1000", 18),
+      ];
+      const reason = "Test";
+
+      await expect(
+        seed.connect(admin).batchRewardMint(recipients, amounts, reason)
+      ).to.be.revertedWith("Pausable: paused");
+    });
+
+    it("Should handle large batch minting correctly", async function () {
+      const { seed, admin, user1, user2, user3 } = await loadFixture(
+        deployTokenFixture
+      );
+
+      // Create arrays with 10 recipients (reusing addresses)
+      const recipients = Array(10).fill(user1.address);
+      recipients[5] = user2.address;
+      recipients[9] = user3.address;
+
+      const amountPerRecipient = ethers.parseUnits("100", 18);
+      const amounts = Array(10).fill(amountPerRecipient);
+      const reason = "Large batch distribution";
+
+      await seed.connect(admin).batchRewardMint(recipients, amounts, reason);
+
+      // user1 receives 8 times (indices 0-4, 6-8)
+      // user2 receives 1 time (index 5)
+      // user3 receives 1 time (index 9)
+      expect(await seed.balanceOf(user1.address)).to.equal(
+        amountPerRecipient * 8n
+      );
+      expect(await seed.balanceOf(user2.address)).to.equal(amountPerRecipient);
+      expect(await seed.balanceOf(user3.address)).to.equal(amountPerRecipient);
+
+      const totalAmount = amountPerRecipient * 10n;
+      expect(await seed.totalSupply()).to.equal(totalAmount);
     });
   });
 

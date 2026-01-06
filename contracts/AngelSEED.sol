@@ -4,11 +4,11 @@ pragma solidity 0.8.30;
 import {ERC20} from "solady/src/tokens/ERC20.sol";
 import {OwnableRoles} from "solady/src/auth/OwnableRoles.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
-import {ISEED} from "./interfaces/ISEED.sol";
+import {IAngelSEED} from "./interfaces/IAngelSEED.sol";
 
 /**
- * @title SEED
- * @notice CAPShield Community Token (SEED) - Community/Reward Token with role-based minting
+ * @title AngelSEED
+ * @notice CAPShield Community Token (AngelSEED) - Community/Reward Token with role-based minting
  * @dev Implements BEP-20 (ERC20-compatible) token standard for BNB Smart Chain
  * @dev Built with Solady's gas-optimized ERC20 and OwnableRoles, plus OpenZeppelin's Pausable
  *
@@ -20,7 +20,7 @@ import {ISEED} from "./interfaces/ISEED.sol";
  * - Burn mechanism (doesn't free mint capacity)
  * - Multisig-only admin
  */
-contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
+contract AngelSEED is ERC20, OwnableRoles, Pausable, IAngelSEED {
     ///////////////// STATE VARIABLES /////////////////
 
     uint256 public constant REWARD_MINTER_ROLE = _ROLE_0;
@@ -34,7 +34,7 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
     ///////////////// CONSTRUCTOR /////////////////
 
     /**
-     * @notice Initializes the SEED token with admin address
+     * @notice Initializes the AngelSEED token with admin address
      * @param admin Address that will receive owner role (MUST be a multisig contract for production)
      * @dev Admin must be a contract (multisig) for security
      */
@@ -46,6 +46,8 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
 
         _initializeOwner(admin);
         _grantRoles(admin, REWARD_MINTER_ROLE);
+
+        emit RoleGranted(REWARD_MINTER_ROLE, admin, address(0));
     }
 
     ///////////////// MODIFIERS /////////////////
@@ -90,10 +92,24 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
         require(recipients.length > 0, EmptyArrays());
         require(bytes(reason).length > 0 && bytes(reason).length <= MAX_REASON_LENGTH, InvalidReason());
 
+        // Calculate total amount and validate all inputs first
+        uint256 totalAmount;
         for (uint256 i; i < recipients.length;) {
             require(recipients[i] != address(0), ZeroAddress());
             require(amounts[i] > 0, InvalidAmount());
-            require(totalMinted + amounts[i] <= MAX_SUPPLY, MaxSupplyExceeded());
+            totalAmount += amounts[i];
+            unchecked {
+                ++i;
+            }
+        }
+
+        // Check total amount against max supply
+        require(totalMinted + totalAmount <= MAX_SUPPLY, MaxSupplyExceeded());
+        totalMinted += totalAmount;
+
+        // Perform minting
+        for (uint256 i; i < recipients.length;) {
+            _mint(recipients[i], amounts[i]);
             emit RewardMint(recipients[i], amounts[i], reason);
             unchecked {
                 ++i;
@@ -134,7 +150,7 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
      * @notice Transfer tokens to a specified address
      * @param to Address to transfer to
      * @param amount Amount to transfer
-     * @dev Overridden to add pause functionality (no fees for SEED)
+     * @dev Overridden to add pause functionality (no fees for AngelSEED)
      */
     function transfer(address to, uint256 amount) public override whenNotPaused returns (bool) {
         return super.transfer(to, amount);
@@ -145,7 +161,7 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
      * @param from Address to transfer from
      * @param to Address to transfer to
      * @param amount Amount to transfer
-     * @dev Overridden to add pause functionality (no fees for SEED)
+     * @dev Overridden to add pause functionality (no fees for AngelSEED)
      */
     function transferFrom(address from, address to, uint256 amount) public override whenNotPaused returns (bool) {
         return super.transferFrom(from, to, amount);
@@ -177,7 +193,7 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
      * @param roles Roles to grant (as bitmap)
      * @dev Only callable by owner (multisig)
      */
-    function grantRoles(address user, uint256 roles) public payable override(ISEED, OwnableRoles) onlyOwner {
+    function grantRoles(address user, uint256 roles) public payable override(IAngelSEED, OwnableRoles) onlyOwner {
         super.grantRoles(user, roles);
         emit RoleGranted(roles, user, msg.sender);
     }
@@ -188,7 +204,7 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
      * @param roles Roles to revoke (as bitmap)
      * @dev Only callable by owner (multisig)
      */
-    function revokeRoles(address user, uint256 roles) public payable override(ISEED, OwnableRoles) onlyOwner {
+    function revokeRoles(address user, uint256 roles) public payable override(IAngelSEED, OwnableRoles) onlyOwner {
         super.revokeRoles(user, roles);
         emit RoleRevoked(roles, user, msg.sender);
     }
@@ -287,13 +303,13 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
      * @notice Returns the name of the token
      */
     function name() public pure override returns (string memory) {
-        return "SEED";
+        return "AngelSEED";
     }
 
     /**
      * @notice Returns the symbol of the token
      */
     function symbol() public pure override returns (string memory) {
-        return "SEED";
+        return "AngelSEED";
     }
 }

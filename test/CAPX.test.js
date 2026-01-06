@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("CAPY Token", function () {
+describe("CAPX Token", function () {
   async function deployTokenFixture() {
     const [
       adminSigner,
@@ -20,8 +20,8 @@ describe("CAPY Token", function () {
     const MockMultisig = await ethers.getContractFactory("MockMultisig");
     const multisig = await MockMultisig.deploy(adminSigner.address);
 
-    const CAPY = await ethers.getContractFactory("CAPY");
-    const capy = await CAPY.deploy(
+    const CAPX = await ethers.getContractFactory("CAPX");
+    const capy = await CAPX.deploy(
       multisig.target,
       treasury.address,
       dao.address
@@ -98,8 +98,8 @@ describe("CAPY Token", function () {
     it("Should have correct name, symbol, and decimals", async function () {
       const { capy } = await loadFixture(deployTokenFixture);
 
-      expect(await capy.name()).to.equal("CAPY");
-      expect(await capy.symbol()).to.equal("CAPY");
+      expect(await capy.name()).to.equal("CAPShield");
+      expect(await capy.symbol()).to.equal("CAPX");
       expect(await capy.decimals()).to.equal(18);
     });
 
@@ -146,12 +146,12 @@ describe("CAPY Token", function () {
     it("Should revert if admin is an EOA during deployment", async function () {
       const [eoaAdmin, treasury, dao] = await ethers.getSigners();
 
-      const CAPY = await ethers.getContractFactory("CAPY");
+      const CAPX = await ethers.getContractFactory("CAPX");
 
       // Should revert because eoaAdmin is not a contract
       await expect(
-        CAPY.deploy(eoaAdmin.address, treasury.address, dao.address)
-      ).to.be.revertedWithCustomError(CAPY, "AdminMustBeContract");
+        CAPX.deploy(eoaAdmin.address, treasury.address, dao.address)
+      ).to.be.revertedWithCustomError(CAPX, "AdminMustBeContract");
     });
   });
 
@@ -291,7 +291,7 @@ describe("CAPY Token", function () {
     it("Should allow treasury mint within cap", async function () {
       const { capy, admin, user1 } = await loadFixture(deployTokenFixture);
 
-      const amount = ethers.parseUnits("20000000", 18);
+      const amount = ethers.parseUnits("15000000", 18);
 
       await expect(capy.connect(admin).treasuryMint(user1.address, amount))
         .to.emit(capy, "Mint")
@@ -306,7 +306,7 @@ describe("CAPY Token", function () {
     it("Should allow DAO mint within cap", async function () {
       const { capy, admin, user1 } = await loadFixture(deployTokenFixture);
 
-      const amount = ethers.parseUnits("30000000", 18);
+      const amount = ethers.parseUnits("25000000", 18);
 
       await expect(capy.connect(admin).daoMint(user1.address, amount))
         .to.emit(capy, "Mint")
