@@ -31,7 +31,7 @@ describe("SEED Token", function () {
       // If connecting as admin (multisig), return wrapped contract
       if (signer && signer.address === multisig.target) {
         return {
-          rewardMint: (to, amount) => executeAsAdmin("rewardMint", to, amount),
+          rewardMint: (to, amount, reason) => executeAsAdmin("rewardMint", to, amount, reason),
           grantRoles: (user, roles) =>
             executeAsAdmin("grantRoles", user, roles),
           revokeRoles: (user, roles) =>
@@ -136,7 +136,7 @@ describe("SEED Token", function () {
       const amount = ethers.parseUnits("1000", 18);
 
       await expect(
-        seed.connect(user1).rewardMint(user1.address, amount)
+        seed.connect(user1).rewardMint(user1.address, amount, "Test reward")
       ).to.be.revertedWithCustomError(seed, "Unauthorized");
     });
 
@@ -161,7 +161,7 @@ describe("SEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const maxSupply = await seed.getMaxSupply();
-      await seed.connect(admin).rewardMint(user1.address, maxSupply);
+      await seed.connect(admin).rewardMint(user1.address, maxSupply, "Max supply test");
 
       expect(await seed.totalSupply()).to.equal(maxSupply);
       expect(await seed.getTotalMinted()).to.equal(maxSupply);
@@ -174,7 +174,7 @@ describe("SEED Token", function () {
       const overAmount = maxSupply + 1n;
 
       await expect(
-        seed.connect(admin).rewardMint(user1.address, overAmount)
+        seed.connect(admin).rewardMint(user1.address, overAmount, "Over cap test")
       ).to.be.revertedWithCustomError(seed, "MaxSupplyExceeded");
     });
 
@@ -184,7 +184,7 @@ describe("SEED Token", function () {
       const maxSupply = await seed.getMaxSupply();
 
       // Mint to cap
-      await seed.connect(admin).rewardMint(user1.address, maxSupply);
+      await seed.connect(admin).rewardMint(user1.address, maxSupply, "Mint to cap");
 
       // User burns 1000 tokens
       const burnAmount = ethers.parseUnits("1000", 18);
@@ -192,7 +192,7 @@ describe("SEED Token", function () {
 
       // Try to mint 1 more token (should fail because totalMinted = cap)
       await expect(
-        seed.connect(admin).rewardMint(user1.address, 1n)
+        seed.connect(admin).rewardMint(user1.address, 1n, "Try after burn")
       ).to.be.revertedWithCustomError(seed, "MaxSupplyExceeded");
 
       // Verify totalMinted hasn't changed despite burn
@@ -205,7 +205,7 @@ describe("SEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const amount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, amount);
+      await seed.connect(admin).rewardMint(user1.address, amount, "Community reward");
 
       expect(await seed.balanceOf(user1.address)).to.equal(amount);
       expect(await seed.totalSupply()).to.equal(amount);
@@ -229,7 +229,7 @@ describe("SEED Token", function () {
       );
 
       const amount = ethers.parseUnits("1000", 18);
-      await seed.connect(rewardMinter).rewardMint(user1.address, amount);
+      await seed.connect(rewardMinter).rewardMint(user1.address, amount, "Granted minter reward");
 
       expect(await seed.balanceOf(user1.address)).to.equal(amount);
     });
@@ -240,7 +240,7 @@ describe("SEED Token", function () {
       const amount = ethers.parseUnits("1000", 18);
 
       await expect(
-        seed.connect(admin).rewardMint(ethers.ZeroAddress, amount)
+        seed.connect(admin).rewardMint(ethers.ZeroAddress, amount, "Test")
       ).to.be.revertedWithCustomError(seed, "ZeroAddress");
     });
 
@@ -248,7 +248,7 @@ describe("SEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       await expect(
-        seed.connect(admin).rewardMint(user1.address, 0)
+        seed.connect(admin).rewardMint(user1.address, 0, "Test")
       ).to.be.revertedWithCustomError(seed, "InvalidAmount");
     });
   });
@@ -270,7 +270,7 @@ describe("SEED Token", function () {
       );
 
       const amount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, amount);
+      await seed.connect(admin).rewardMint(user1.address, amount, "Test mint");
 
       await seed.connect(admin).pause();
 
@@ -286,7 +286,7 @@ describe("SEED Token", function () {
 
       const amount = ethers.parseUnits("1000", 18);
       await expect(
-        seed.connect(admin).rewardMint(user1.address, amount)
+        seed.connect(admin).rewardMint(user1.address, amount, "Test")
       ).to.be.revertedWith("Pausable: paused");
     });
   });
@@ -296,7 +296,7 @@ describe("SEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount);
+      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("100", 18);
       await seed.connect(user1).burn(burnAmount);
@@ -313,7 +313,7 @@ describe("SEED Token", function () {
       );
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount);
+      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("100", 18);
       await seed.connect(user1).approve(user2.address, burnAmount);
@@ -328,7 +328,7 @@ describe("SEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount);
+      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("500", 18);
       await seed.connect(user1).burn(burnAmount);
@@ -340,7 +340,7 @@ describe("SEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount);
+      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("500", 18);
       await seed.connect(user1).burn(burnAmount);
@@ -432,10 +432,11 @@ describe("SEED Token", function () {
       );
 
       const amount = ethers.parseUnits("1000", 18);
+      const reason = "Test reward";
 
-      await expect(seed.connect(admin).rewardMint(user1.address, amount))
+      await expect(seed.connect(admin).rewardMint(user1.address, amount, reason))
         .to.emit(seed, "RewardMint")
-        .withArgs(user1.address, amount, REWARD_MINTER_ROLE);
+        .withArgs(user1.address, amount, reason);
     });
 
     it("Should emit RoleGranted/RoleRevoked events", async function () {

@@ -10,7 +10,22 @@
     },
     {
       "inputs": [],
+      "name": "ArrayLengthMismatch",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "EmptyArrays",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "InvalidAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "InvalidReason",
       "type": "error"
     },
     {
@@ -40,9 +55,9 @@
         },
         {
           "indexed": true,
-          "internalType": "uint256",
-          "name": "role",
-          "type": "uint256"
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
         }
       ],
       "name": "RewardMint",
@@ -97,6 +112,29 @@
       ],
       "name": "RoleRevoked",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address[]",
+          "name": "recipients",
+          "type": "address[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "amounts",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "batchRewardMint",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [
@@ -233,6 +271,11 @@
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
         }
       ],
       "name": "rewardMint",

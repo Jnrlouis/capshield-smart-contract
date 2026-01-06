@@ -11,11 +11,14 @@ interface ISEED {
     error ZeroAddress();
     error MaxSupplyExceeded();
     error InvalidAmount();
+    error InvalidReason();
+    error ArrayLengthMismatch();
+    error EmptyArrays();
     error AdminMustBeContract();
 
     ///////////////// EVENTS /////////////////
 
-    event RewardMint(address indexed to, uint256 amount, uint256 indexed role);
+    event RewardMint(address indexed to, uint256 amount, string indexed reason);
     event RoleGranted(uint256 indexed role, address indexed account, address indexed sender);
     event RoleRevoked(uint256 indexed role, address indexed account, address indexed sender);
 
@@ -25,8 +28,18 @@ interface ISEED {
      * @notice Mint tokens for rewards
      * @param to Address to mint to
      * @param amount Amount to mint
+     * @param reason Reason for minting
      */
-    function rewardMint(address to, uint256 amount) external;
+    function rewardMint(address to, uint256 amount, string calldata reason) external;
+
+    /**
+     * @notice Mint tokens for rewards
+     * @param recipients Addresses to mint to
+     * @param amounts Amounts to mint
+     * @param reason Reason for minting
+     */
+    function batchRewardMint(address[] calldata recipients, uint256[] calldata amounts, string calldata reason)
+        external;
 
     /**
      * @notice Burn tokens

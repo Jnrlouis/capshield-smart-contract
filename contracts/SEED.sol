@@ -26,6 +26,9 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
     uint256 public constant REWARD_MINTER_ROLE = _ROLE_0;
 
     uint256 private constant MAX_SUPPLY = 10_000_000_000 * 10 ** 18; // 10 billion tokens
+
+    uint256 public constant MAX_REASON_LENGTH = 256;
+
     uint256 private totalMinted;
 
     ///////////////// CONSTRUCTOR /////////////////
@@ -58,18 +61,44 @@ contract SEED is ERC20, OwnableRoles, Pausable, ISEED {
      * @notice Mint tokens for community rewards
      * @param to Address to mint to
      * @param amount Amount of tokens to mint
+     * @param reason Reason for minting
      * @dev Only callable by addresses with REWARD_MINTER_ROLE
      * @dev Respects MAX_SUPPLY cap
      */
-    function rewardMint(address to, uint256 amount) external whenNotPaused onlyRole(REWARD_MINTER_ROLE) {
+    function rewardMint(address to, uint256 amount, string calldata reason)
+        external
+        whenNotPaused
+        onlyRole(REWARD_MINTER_ROLE)
+    {
         require(to != address(0), ZeroAddress());
         require(amount > 0, InvalidAmount());
         require(totalMinted + amount <= MAX_SUPPLY, MaxSupplyExceeded());
+        require(bytes(reason).length > 0 && bytes(reason).length <= MAX_REASON_LENGTH, InvalidReason());
 
         totalMinted = totalMinted + amount;
         _mint(to, amount);
 
-        emit RewardMint(to, amount, REWARD_MINTER_ROLE);
+        emit RewardMint(to, amount, reason);
+    }
+
+    function batchRewardMint(address[] calldata recipients, uint256[] calldata amounts, string calldata reason)
+        external
+        onlyRole(REWARD_MINTER_ROLE)
+        whenNotPaused
+    {
+        require(recipients.length == amounts.length, ArrayLengthMismatch());
+        require(recipients.length > 0, EmptyArrays());
+        require(bytes(reason).length > 0 && bytes(reason).length <= MAX_REASON_LENGTH, InvalidReason());
+
+        for (uint256 i; i < recipients.length;) {
+            require(recipients[i] != address(0), ZeroAddress());
+            require(amounts[i] > 0, InvalidAmount());
+            require(totalMinted + amounts[i] <= MAX_SUPPLY, MaxSupplyExceeded());
+            emit RewardMint(recipients[i], amounts[i], reason);
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     ///////////////// BURN FUNCTIONS /////////////////

@@ -185,7 +185,7 @@ contract CAPY is ERC20, OwnableRoles, Pausable, ICAPY {
         require(revenue > 0, InvalidRevenue());
         require(marketValue > 0, InvalidMarketValue());
 
-        uint256 tokensToMint = revenue / marketValue;
+        uint256 tokensToMint = revenue * 10 ** decimals() / marketValue;
         require(tokensToMint > 0, InvalidAmount());
         require(totalMinted + tokensToMint <= MAX_SUPPLY, MaxSupplyExceeded());
 
@@ -443,11 +443,15 @@ contract CAPY is ERC20, OwnableRoles, Pausable, ICAPY {
             uint256 recipientAmount = amount - burnAmount - treasuryAmount;
 
             // Burn tokens (reduce supply)
-            _burn(from, burnAmount);
+            if (burnAmount > 0) {
+                _burn(from, burnAmount);
+            }
 
             // Transfer to treasury
-            super._transfer(from, treasury, treasuryAmount);
-            emit TreasuryFee(from, treasury, treasuryAmount);
+            if (treasuryAmount > 0) {
+                super._transfer(from, treasury, treasuryAmount);
+                emit TreasuryFee(from, treasury, treasuryAmount);
+            }
 
             // Transfer to recipient
             super._transfer(from, to, recipientAmount);

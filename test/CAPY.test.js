@@ -325,7 +325,7 @@ describe("CAPY Token", function () {
 
       const revenue = ethers.parseEther("1000");
       const marketValue = ethers.parseEther("10");
-      const expectedTokens = revenue / marketValue; // 100 tokens
+      const expectedTokens = ethers.parseEther("100"); // 1000 / 10 = 100 tokens
 
       await expect(capy.connect(admin).revenueMint(revenue, marketValue))
         .to.emit(capy, "RevenueMint")
@@ -747,7 +747,7 @@ describe("CAPY Token", function () {
 
       const revenue = ethers.parseEther("1000");
       const marketValue = ethers.parseEther("10");
-      const expectedTokens = revenue / marketValue;
+      const expectedTokens = ethers.parseEther("100"); // 1000 / 10 = 100 tokens
 
       await expect(capy.connect(admin).revenueMint(revenue, marketValue))
         .to.emit(capy, "RevenueMint")
