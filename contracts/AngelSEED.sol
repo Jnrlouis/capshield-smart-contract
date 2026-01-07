@@ -127,6 +127,7 @@ contract AngelSEED is ERC20, OwnableRoles, Pausable, IAngelSEED {
     function burn(uint256 amount) external {
         require(amount > 0, InvalidAmount());
         _burn(msg.sender, amount);
+        emit Burn(msg.sender, amount);
     }
 
     /**
@@ -142,6 +143,7 @@ contract AngelSEED is ERC20, OwnableRoles, Pausable, IAngelSEED {
 
         _spendAllowance(from, msg.sender, amount);
         _burn(from, amount);
+        emit Burn(from, amount);
     }
 
     ///////////////// TRANSFER OVERRIDE /////////////////

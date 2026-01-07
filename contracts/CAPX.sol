@@ -179,12 +179,18 @@ contract CAPX is ERC20, OwnableRoles, Pausable, ICAPX {
 
     /**
      * @notice Mints tokens based on revenue and market value
+     * @param to Address to mint tokens to
      * @param revenue Revenue amount in wei
      * @param marketValue Market value per token in wei
      * @dev Formula: tokensToMint = revenue / marketValue
      *      Only owner can call. Respects MAX_SUPPLY cap.
      */
-    function revenueMint(uint256 revenue, uint256 marketValue) external onlyOwner whenNotPaused {
+    function revenueMint(address to, uint256 revenue, uint256 marketValue)
+        external
+        onlyOwner
+        whenNotPaused
+        validAddress(to)
+    {
         require(revenue > 0, InvalidRevenue());
         require(marketValue > 0, InvalidMarketValue());
 
@@ -193,7 +199,7 @@ contract CAPX is ERC20, OwnableRoles, Pausable, ICAPX {
         require(totalMinted + tokensToMint <= MAX_SUPPLY, MaxSupplyExceeded());
 
         totalMinted = totalMinted + tokensToMint;
-        _mint(treasury, tokensToMint);
+        _mint(to, tokensToMint);
 
         emit RevenueMint(revenue, marketValue, tokensToMint);
     }
@@ -284,6 +290,7 @@ contract CAPX is ERC20, OwnableRoles, Pausable, ICAPX {
      */
     function burn(uint256 amount) external {
         _burn(msg.sender, amount);
+        emit Burn(msg.sender, amount);
     }
 
     /**
@@ -294,6 +301,7 @@ contract CAPX is ERC20, OwnableRoles, Pausable, ICAPX {
     function burnFrom(address from, uint256 amount) external {
         _spendAllowance(from, msg.sender, amount);
         _burn(from, amount);
+        emit Burn(from, amount);
     }
 
     /**

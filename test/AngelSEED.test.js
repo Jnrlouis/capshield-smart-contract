@@ -573,7 +573,12 @@ describe("AngelSEED Token", function () {
       await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("100", 18);
-      await seed.connect(user1).burn(burnAmount);
+
+      await expect(seed.connect(user1).burn(burnAmount))
+        .to.emit(seed, "Burn")
+        .withArgs(user1.address, burnAmount)
+        .to.emit(seed, "Transfer")
+        .withArgs(user1.address, ethers.ZeroAddress, burnAmount);
 
       expect(await seed.balanceOf(user1.address)).to.equal(
         mintAmount - burnAmount
@@ -591,7 +596,12 @@ describe("AngelSEED Token", function () {
 
       const burnAmount = ethers.parseUnits("100", 18);
       await seed.connect(user1).approve(user2.address, burnAmount);
-      await seed.connect(user2).burnFrom(user1.address, burnAmount);
+
+      await expect(seed.connect(user2).burnFrom(user1.address, burnAmount))
+        .to.emit(seed, "Burn")
+        .withArgs(user1.address, burnAmount)
+        .to.emit(seed, "Transfer")
+        .withArgs(user1.address, ethers.ZeroAddress, burnAmount);
 
       expect(await seed.balanceOf(user1.address)).to.equal(
         mintAmount - burnAmount

@@ -21,6 +21,7 @@ interface IAngelSEED {
     event RewardMint(address indexed to, uint256 amount, string reason);
     event RoleGranted(uint256 indexed role, address indexed account, address indexed sender);
     event RoleRevoked(uint256 indexed role, address indexed account, address indexed sender);
+    event Burn(address indexed from, uint256 amount);
 
     ///////////////// FUNCTIONS /////////////////
 

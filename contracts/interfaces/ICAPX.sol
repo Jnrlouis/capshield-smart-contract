@@ -22,6 +22,7 @@ interface ICAPX {
     event ExemptionUpdated(address indexed account, bool exempt);
     event RoleGranted(uint256 indexed role, address indexed account, address indexed sender);
     event RoleRevoked(uint256 indexed role, address indexed account, address indexed sender);
+    event Burn(address indexed from, uint256 amount);
 
     ///////////////// STRUCTS /////////////////
 
@@ -39,7 +40,7 @@ interface ICAPX {
 
     function daoMint(address to, uint256 amount) external;
 
-    function revenueMint(uint256 revenue, uint256 marketValue) external;
+    function revenueMint(address to, uint256 revenue, uint256 marketValue) external;
 
     function setTreasuryAddress(address newTreasury) external;
 

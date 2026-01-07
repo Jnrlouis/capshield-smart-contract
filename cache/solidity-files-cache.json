@@ -224,8 +224,8 @@
       ]
     },
     "/home/jnrlouis/gigs/capshield-smart-contract/contracts/AngelSEED.sol": {
-      "lastModificationDate": 1767735242389,
-      "contentHash": "684080f1d9cd5b9f7d66a68e7de4e443",
+      "lastModificationDate": 1767780080110,
+      "contentHash": "190f1e06f17be5bc585dff95f7788df1",
       "sourceName": "contracts/AngelSEED.sol",
       "solcConfig": {
         "version": "0.8.30",
@@ -265,8 +265,8 @@
       ]
     },
     "/home/jnrlouis/gigs/capshield-smart-contract/contracts/interfaces/IAngelSEED.sol": {
-      "lastModificationDate": 1767735405641,
-      "contentHash": "c9442a72f625db2db7bdf3aa2da881c6",
+      "lastModificationDate": 1767780035782,
+      "contentHash": "b2e48b5600d5d37c001c9f95d9e1613d",
       "sourceName": "contracts/interfaces/IAngelSEED.sol",
       "solcConfig": {
         "version": "0.8.30",
@@ -301,8 +301,8 @@
       ]
     },
     "/home/jnrlouis/gigs/capshield-smart-contract/contracts/CAPX.sol": {
-      "lastModificationDate": 1767733659009,
-      "contentHash": "8369df21f9b5f38ced3b1f36db532cd2",
+      "lastModificationDate": 1767780458026,
+      "contentHash": "65e36d9782aa302464140aa49b8e52c2",
       "sourceName": "contracts/CAPX.sol",
       "solcConfig": {
         "version": "0.8.30",
@@ -342,8 +342,8 @@
       ]
     },
     "/home/jnrlouis/gigs/capshield-smart-contract/contracts/interfaces/ICAPX.sol": {
-      "lastModificationDate": 1767735119893,
-      "contentHash": "4d42c4beb654aa655ace16e4e8d1a333",
+      "lastModificationDate": 1767780221182,
+      "contentHash": "f2f8ca25f745be83988ad60d0c03f67d",
       "sourceName": "contracts/interfaces/ICAPX.sol",
       "solcConfig": {
         "version": "0.8.30",

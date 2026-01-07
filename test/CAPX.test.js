@@ -50,8 +50,8 @@ describe("CAPX Token", function () {
           treasuryMint: (to, amount) =>
             executeAsAdmin("treasuryMint", to, amount),
           daoMint: (to, amount) => executeAsAdmin("daoMint", to, amount),
-          revenueMint: (revenue, marketValue) =>
-            executeAsAdmin("revenueMint", revenue, marketValue),
+          revenueMint: (to, revenue, marketValue) =>
+            executeAsAdmin("revenueMint", to, revenue, marketValue),
           grantRoles: (user, roles) =>
             executeAsAdmin("grantRoles", user, roles),
           revokeRoles: (user, roles) =>
@@ -249,7 +249,7 @@ describe("CAPX Token", function () {
       const marketValue = 1n; // 1 wei per token
 
       await expect(
-        capy.connect(admin).revenueMint(revenue, marketValue)
+        capy.connect(admin).revenueMint(user1.address, revenue, marketValue)
       ).to.be.revertedWithCustomError(capy, "MaxSupplyExceeded");
     });
 
@@ -327,7 +327,7 @@ describe("CAPX Token", function () {
       const marketValue = ethers.parseEther("10");
       const expectedTokens = ethers.parseEther("100"); // 1000 / 10 = 100 tokens
 
-      await expect(capy.connect(admin).revenueMint(revenue, marketValue))
+      await expect(capy.connect(admin).revenueMint(treasury.address, revenue, marketValue))
         .to.emit(capy, "RevenueMint")
         .withArgs(revenue, marketValue, expectedTokens);
 
@@ -335,24 +335,24 @@ describe("CAPX Token", function () {
     });
 
     it("Should require revenue > 0", async function () {
-      const { capy, admin } = await loadFixture(deployTokenFixture);
+      const { capy, admin, treasury } = await loadFixture(deployTokenFixture);
 
       const revenue = 0;
       const marketValue = ethers.parseEther("10");
 
       await expect(
-        capy.connect(admin).revenueMint(revenue, marketValue)
+        capy.connect(admin).revenueMint(treasury.address, revenue, marketValue)
       ).to.be.revertedWithCustomError(capy, "InvalidRevenue");
     });
 
     it("Should require market value > 0", async function () {
-      const { capy, admin } = await loadFixture(deployTokenFixture);
+      const { capy, admin, treasury } = await loadFixture(deployTokenFixture);
 
       const revenue = ethers.parseEther("1000");
       const marketValue = 0;
 
       await expect(
-        capy.connect(admin).revenueMint(revenue, marketValue)
+        capy.connect(admin).revenueMint(treasury.address, revenue, marketValue)
       ).to.be.revertedWithCustomError(capy, "InvalidMarketValue");
     });
   });
@@ -564,6 +564,8 @@ describe("CAPX Token", function () {
       const burnAmount = ethers.parseUnits("1000", 18);
 
       await expect(capy.connect(user1).burn(burnAmount))
+        .to.emit(capy, "Burn")
+        .withArgs(user1.address, burnAmount)
         .to.emit(capy, "Transfer")
         .withArgs(user1.address, ethers.ZeroAddress, burnAmount);
 
@@ -586,6 +588,8 @@ describe("CAPX Token", function () {
       await capy.connect(user1).approve(user2.address, burnAmount);
 
       await expect(capy.connect(user2).burnFrom(user1.address, burnAmount))
+        .to.emit(capy, "Burn")
+        .withArgs(user1.address, burnAmount)
         .to.emit(capy, "Transfer")
         .withArgs(user1.address, ethers.ZeroAddress, burnAmount);
 
@@ -743,13 +747,13 @@ describe("CAPX Token", function () {
     });
 
     it("Should emit RevenueMint events", async function () {
-      const { capy, admin } = await loadFixture(deployTokenFixture);
+      const { capy, admin, treasury } = await loadFixture(deployTokenFixture);
 
       const revenue = ethers.parseEther("1000");
       const marketValue = ethers.parseEther("10");
       const expectedTokens = ethers.parseEther("100"); // 1000 / 10 = 100 tokens
 
-      await expect(capy.connect(admin).revenueMint(revenue, marketValue))
+      await expect(capy.connect(admin).revenueMint(treasury.address, revenue, marketValue))
         .to.emit(capy, "RevenueMint")
         .withArgs(revenue, marketValue, expectedTokens);
     });
