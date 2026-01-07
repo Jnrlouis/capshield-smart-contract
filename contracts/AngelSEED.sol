@@ -312,6 +312,6 @@ contract AngelSEED is ERC20, OwnableRoles, Pausable, IAngelSEED {
      * @notice Returns the symbol of the token
      */
     function symbol() public pure override returns (string memory) {
-        return "AngelSEED";
+        return "ANGEL";
     }
 }

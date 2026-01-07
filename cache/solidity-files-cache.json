@@ -224,8 +224,8 @@
       ]
     },
     "/home/jnrlouis/gigs/capshield-smart-contract/contracts/AngelSEED.sol": {
-      "lastModificationDate": 1767780080110,
-      "contentHash": "190f1e06f17be5bc585dff95f7788df1",
+      "lastModificationDate": 1767781433310,
+      "contentHash": "48f96cf94fa4a7703e11e78b376bf5fc",
       "sourceName": "contracts/AngelSEED.sol",
       "solcConfig": {
         "version": "0.8.30",

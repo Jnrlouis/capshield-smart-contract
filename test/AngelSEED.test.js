@@ -31,8 +31,10 @@ describe("AngelSEED Token", function () {
       // If connecting as admin (multisig), return wrapped contract
       if (signer && signer.address === multisig.target) {
         return {
-          rewardMint: (to, amount, reason) => executeAsAdmin("rewardMint", to, amount, reason),
-          batchRewardMint: (recipients, amounts, reason) => executeAsAdmin("batchRewardMint", recipients, amounts, reason),
+          rewardMint: (to, amount, reason) =>
+            executeAsAdmin("rewardMint", to, amount, reason),
+          batchRewardMint: (recipients, amounts, reason) =>
+            executeAsAdmin("batchRewardMint", recipients, amounts, reason),
           grantRoles: (user, roles) =>
             executeAsAdmin("grantRoles", user, roles),
           revokeRoles: (user, roles) =>
@@ -69,7 +71,7 @@ describe("AngelSEED Token", function () {
       const { seed } = await loadFixture(deployTokenFixture);
 
       expect(await seed.name()).to.equal("AngelSEED");
-      expect(await seed.symbol()).to.equal("AngelSEED");
+      expect(await seed.symbol()).to.equal("ANGEL");
       expect(await seed.decimals()).to.equal(18);
     });
 
@@ -105,10 +107,9 @@ describe("AngelSEED Token", function () {
       const AngelSEED = await ethers.getContractFactory("AngelSEED");
 
       // Should revert because eoaAdmin is not a contract
-      await expect(AngelSEED.deploy(eoaAdmin.address)).to.be.revertedWithCustomError(
-        AngelSEED,
-        "AdminMustBeContract"
-      );
+      await expect(
+        AngelSEED.deploy(eoaAdmin.address)
+      ).to.be.revertedWithCustomError(AngelSEED, "AdminMustBeContract");
     });
   });
 
@@ -162,7 +163,9 @@ describe("AngelSEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const maxSupply = await seed.getMaxSupply();
-      await seed.connect(admin).rewardMint(user1.address, maxSupply, "Max supply test");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, maxSupply, "Max supply test");
 
       expect(await seed.totalSupply()).to.equal(maxSupply);
       expect(await seed.getTotalMinted()).to.equal(maxSupply);
@@ -175,7 +178,9 @@ describe("AngelSEED Token", function () {
       const overAmount = maxSupply + 1n;
 
       await expect(
-        seed.connect(admin).rewardMint(user1.address, overAmount, "Over cap test")
+        seed
+          .connect(admin)
+          .rewardMint(user1.address, overAmount, "Over cap test")
       ).to.be.revertedWithCustomError(seed, "MaxSupplyExceeded");
     });
 
@@ -185,7 +190,9 @@ describe("AngelSEED Token", function () {
       const maxSupply = await seed.getMaxSupply();
 
       // Mint to cap
-      await seed.connect(admin).rewardMint(user1.address, maxSupply, "Mint to cap");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, maxSupply, "Mint to cap");
 
       // User burns 1000 tokens
       const burnAmount = ethers.parseUnits("1000", 18);
@@ -206,7 +213,9 @@ describe("AngelSEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const amount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, amount, "Community reward");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, amount, "Community reward");
 
       expect(await seed.balanceOf(user1.address)).to.equal(amount);
       expect(await seed.totalSupply()).to.equal(amount);
@@ -230,7 +239,9 @@ describe("AngelSEED Token", function () {
       );
 
       const amount = ethers.parseUnits("1000", 18);
-      await seed.connect(rewardMinter).rewardMint(user1.address, amount, "Granted minter reward");
+      await seed
+        .connect(rewardMinter)
+        .rewardMint(user1.address, amount, "Granted minter reward");
 
       expect(await seed.balanceOf(user1.address)).to.equal(amount);
     });
@@ -570,7 +581,9 @@ describe("AngelSEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("100", 18);
 
@@ -592,7 +605,9 @@ describe("AngelSEED Token", function () {
       );
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("100", 18);
       await seed.connect(user1).approve(user2.address, burnAmount);
@@ -612,7 +627,9 @@ describe("AngelSEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("500", 18);
       await seed.connect(user1).burn(burnAmount);
@@ -624,7 +641,9 @@ describe("AngelSEED Token", function () {
       const { seed, admin, user1 } = await loadFixture(deployTokenFixture);
 
       const mintAmount = ethers.parseUnits("1000", 18);
-      await seed.connect(admin).rewardMint(user1.address, mintAmount, "Test mint");
+      await seed
+        .connect(admin)
+        .rewardMint(user1.address, mintAmount, "Test mint");
 
       const burnAmount = ethers.parseUnits("500", 18);
       await seed.connect(user1).burn(burnAmount);
@@ -718,7 +737,9 @@ describe("AngelSEED Token", function () {
       const amount = ethers.parseUnits("1000", 18);
       const reason = "Test reward";
 
-      await expect(seed.connect(admin).rewardMint(user1.address, amount, reason))
+      await expect(
+        seed.connect(admin).rewardMint(user1.address, amount, reason)
+      )
         .to.emit(seed, "RewardMint")
         .withArgs(user1.address, amount, reason);
     });
