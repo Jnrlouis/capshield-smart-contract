@@ -12,8 +12,6 @@ dist
 dist-ssr
 *.local
 /scratch
-/artifacts/*
-/cache/*
 typechain-types
 
 # Environment variables (NEVER commit these!)
@@ -22,8 +20,8 @@ typechain-types
 !.env.example
 
 # Hardhat
-artifacts/
-cache/
+/artifacts
+/cache
 coverage/
 coverage.json
 

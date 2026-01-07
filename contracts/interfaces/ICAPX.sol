@@ -2,8 +2,6 @@
 pragma solidity 0.8.30;
 
 interface ICAPX {
-    ///////////////// ERRORS /////////////////
-
     error ZeroAddress();
     error MaxSupplyExceeded();
     error InvalidAmount();
@@ -11,8 +9,6 @@ interface ICAPX {
     error InvalidMarketValue();
     error MintAllocationExceeded();
     error AdminMustBeContract();
-
-    ///////////////// EVENTS /////////////////
 
     event Mint(address indexed to, uint256 amount, uint256 indexed role);
     event RevenueMint(uint256 revenue, uint256 marketValue, uint256 tokensMinted);
@@ -24,15 +20,11 @@ interface ICAPX {
     event RoleRevoked(uint256 indexed role, address indexed account, address indexed sender);
     event Burn(address indexed from, uint256 amount);
 
-    ///////////////// STRUCTS /////////////////
-
     struct MintAllocation {
         uint256 teamMinted;
         uint256 treasuryMinted;
         uint256 daoMinted;
     }
-
-    ///////////////// FUNCTIONS /////////////////
 
     function teamMint(address to, uint256 amount) external;
 
